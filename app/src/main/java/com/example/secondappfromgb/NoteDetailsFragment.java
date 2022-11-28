@@ -9,6 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class NoteDetailsFragment extends Fragment {
@@ -57,9 +59,6 @@ public class NoteDetailsFragment extends Fragment {
                 });
 
 
-//        добавть проверку на наличии аргументов
-//        Note note = getArguments().getParcelable(ARG_NOTE);
-//        showNote(note);
         if (arguments != null) {
             note = arguments.getParcelable(ARG_NOTE);
             showNote(note);
@@ -70,7 +69,9 @@ public class NoteDetailsFragment extends Fragment {
 
     private void showNote(Note note) {
         name.setText(note.getName());
-        String dateStr = String.format("%s/%s/%s", note.getDate().get(Calendar.DAY_OF_MONTH), note.getDate().get(Calendar.MONTH) + 1, note.getDate().get(Calendar.YEAR));
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String dateStr = dateFormat.format(note.getDate().getTime());
+        //String dateStr = String.format("%s/%s/%s", note.getDate().get(Calendar.DAY_OF_MONTH), note.getDate().get(Calendar.MONTH) + 1, note.getDate().get(Calendar.YEAR));
         date.setText(dateStr);
         description.setText(note.getDescription());
         content.setText(note.getContent());
