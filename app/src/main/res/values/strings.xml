@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Second App from GB</string>
     <string name="notes">Заметки</string>
+    <string name="hello_text">Добро пожаловать в заметки!</string>
+    <string name="text_about_us">Text about us</string>
+    <string name="settings_text">Settings</string>
+    <string name="menu_about_us">О нас</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_exit">Выход</string>
 </resources>

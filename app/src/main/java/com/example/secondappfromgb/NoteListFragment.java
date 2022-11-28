@@ -1,10 +1,12 @@
 package com.example.secondappfromgb;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -13,9 +15,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -45,6 +50,37 @@ public class NoteListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case (R.id.menu_settings):
+                        getParentFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container, new SettingsFragment())
+                                .addToBackStack("")
+                                .commit();
+                        return true;
+
+                    case (R.id.menu_about_us):
+                        getParentFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container, new AboutUsFragment())
+                                .addToBackStack("")
+                                .commit();
+                        return true;
+
+                    case (R.id.menu_exit):
+                        Toast.makeText(requireContext(), "Exit!!!!", Toast.LENGTH_LONG).show();
+                        return true;
+
+                }
+
+                return false;
+            }
+        });
+
         if (savedInstanceState != null) {
             note = savedInstanceState.getParcelable(SELECTED_NOTE);
         }
@@ -59,14 +95,12 @@ public class NoteListFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     note = item_note;
-                    //Toast.makeText(requireContext(), note.getName(), Toast.LENGTH_SHORT).show();
                     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                         Bundle bundle = new Bundle();
                         bundle.putParcelable(SELECTED_NOTE, note);
                         getParentFragmentManager()
                                 .setFragmentResult(NOTE_CLICKED_KEY, bundle);
                     } else {
-                        //перейти на др.фрагмент
                         Toast.makeText(requireContext(), note.getName(), Toast.LENGTH_SHORT).show();
                         getParentFragmentManager()
                                 .beginTransaction()
@@ -83,8 +117,10 @@ public class NoteListFragment extends Fragment {
 
             name.setText(item_note.getName());
             description.setText(item_note.getDescription());
-            String dateStr = String.format("%s/%s/%s", item_note.getDate().get(Calendar.DAY_OF_MONTH), item_note.getDate().get(Calendar.MONTH) + 1, item_note.getDate().get(Calendar.YEAR));
-            Log.d("OLGA", "dateStr: " + dateStr);
+
+            @SuppressLint("SimpleDateFormat")
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String dateStr = dateFormat.format(item_note.getDate().getTime());
             date.setText(dateStr);
 
             container.addView(itemView);
