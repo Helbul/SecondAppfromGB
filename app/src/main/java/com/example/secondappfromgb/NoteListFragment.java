@@ -51,6 +51,11 @@ public class NoteListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
+
+        if (requireActivity() instanceof ToolbarHolder) {
+            ((ToolbarHolder) requireActivity()).setToolbar(toolbar);
+        }
+
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -96,10 +101,16 @@ public class NoteListFragment extends Fragment {
                 public void onClick(View view) {
                     note = item_note;
                     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable(SELECTED_NOTE, note);
+//                        Bundle bundle = new Bundle();
+//                        bundle.putParcelable(SELECTED_NOTE, note);
+//                        getParentFragmentManager()
+//                                .setFragmentResult(NOTE_CLICKED_KEY, bundle);
                         getParentFragmentManager()
-                                .setFragmentResult(NOTE_CLICKED_KEY, bundle);
+                                .beginTransaction()
+                                .replace(R.id.fragment_details_container, NoteDetailsFragment.newInstance(note))
+                                //.addToBackStack("")
+                                .commit();
+
                     } else {
                         Toast.makeText(requireContext(), note.getName(), Toast.LENGTH_SHORT).show();
                         getParentFragmentManager()
