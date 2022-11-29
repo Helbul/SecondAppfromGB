@@ -1,17 +1,19 @@
 package com.example.secondappfromgb;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class NoteDetailsFragment extends Fragment {
 
@@ -64,6 +66,24 @@ public class NoteDetailsFragment extends Fragment {
             showNote(note);
         }
 
+        Toolbar toolbar = view.findViewById(R.id.toolbar_note_details);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case (R.id.menu_delete):
+                        Toast.makeText(requireContext(), R.string.menu_delete, Toast.LENGTH_LONG).show();
+                        return true;
+
+                    case (R.id.menu_share):
+                        Toast.makeText(requireContext(), R.string.menu_share, Toast.LENGTH_LONG).show();
+                        return true;
+                }
+
+                return false;
+            }
+        });
+
     }
 
 
@@ -71,7 +91,6 @@ public class NoteDetailsFragment extends Fragment {
         name.setText(note.getName());
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String dateStr = dateFormat.format(note.getDate().getTime());
-        //String dateStr = String.format("%s/%s/%s", note.getDate().get(Calendar.DAY_OF_MONTH), note.getDate().get(Calendar.MONTH) + 1, note.getDate().get(Calendar.YEAR));
         date.setText(dateStr);
         description.setText(note.getDescription());
         content.setText(note.getContent());

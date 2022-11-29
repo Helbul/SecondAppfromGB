@@ -10,6 +10,7 @@ public class InMemoryNotesRepository implements NotesRepository{
     private static NotesRepository INSTANCE;
     private Context context;
 
+
     public InMemoryNotesRepository(Context context) {
         this.context = context;
     }
@@ -23,6 +24,7 @@ public class InMemoryNotesRepository implements NotesRepository{
 
     @Override
     public List<Note> getAll() {
+
         ArrayList<Note> result = new ArrayList<>();
 
         result.add(new Note("Note 1", "Description 1", new GregorianCalendar(2020, 0, 1),"111111111111111111111111111111"));

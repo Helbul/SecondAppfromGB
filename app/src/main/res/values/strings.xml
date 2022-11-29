@@ -7,4 +7,9 @@
     <string name="menu_about_us">О нас</string>
     <string name="menu_settings">Настройки</string>
     <string name="menu_exit">Выход</string>
+    <string name="menu_delete">Удалить</string>
+    <string name="menu_share">Отправить</string>
+    <string name="drawer_open">Открыть</string>
+    <string name="drawer_close">Закрыть</string>
+    <string name="user">Пользовтель</string>
 </resources>
