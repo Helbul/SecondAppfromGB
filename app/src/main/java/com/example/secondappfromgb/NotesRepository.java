@@ -6,4 +6,8 @@ public interface NotesRepository {
     List<Note> getAll();
 
     void add(Note note);
+
+    void remove (Note note);
+
+    void remove (int index);
 }
