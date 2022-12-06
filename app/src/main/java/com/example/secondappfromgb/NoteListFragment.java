@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -91,50 +93,33 @@ public class NoteListFragment extends Fragment {
         }
 
         List<Note> notes = InMemoryNotesRepository.getInstance(requireContext()).getAll();
-        LinearLayout container = view.findViewById(R.id.container);
 
-        for (Note item_note: notes) {
-            View itemView = getLayoutInflater().inflate(R.layout.item_note, container, false);
+        RecyclerView recyclerView = view.findViewById(R.id.container);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        NotesAdapter notesAdapter = new NotesAdapter();
+        notesAdapter.setNoteClicked(new NotesAdapter.OnNoteClicked() {
+            @Override
+            public void onNoteClicked(Note clickedNote) {
+                note = clickedNote;
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_details_container, NoteDetailsFragment.newInstance(note))
+                            .commit();
 
-            itemView.findViewById(R.id.root).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    note = item_note;
-                    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//                        Bundle bundle = new Bundle();
-//                        bundle.putParcelable(SELECTED_NOTE, note);
-//                        getParentFragmentManager()
-//                                .setFragmentResult(NOTE_CLICKED_KEY, bundle);
-                        getParentFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_details_container, NoteDetailsFragment.newInstance(note))
-                                //.addToBackStack("")
-                                .commit();
-
-                    } else {
-                        Toast.makeText(requireContext(), note.getName(), Toast.LENGTH_SHORT).show();
-                        getParentFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, NoteDetailsFragment.newInstance(note))
-                                .addToBackStack("")
-                                .commit();
-                    }
+                } else {
+                    Toast.makeText(requireContext(), note.getName(), Toast.LENGTH_SHORT).show();
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, NoteDetailsFragment.newInstance(note))
+                            .addToBackStack("")
+                            .commit();
                 }
-            });
+            }
+        });
+        notesAdapter.setData(notes);
+        recyclerView.setAdapter(notesAdapter);
+        notesAdapter.notifyDataSetChanged();
 
-            TextView name = itemView.findViewById(R.id.name);
-            TextView description = itemView.findViewById(R.id.description);
-            TextView date = itemView.findViewById(R.id.date);
-
-            name.setText(item_note.getName());
-            description.setText(item_note.getDescription());
-
-            @SuppressLint("SimpleDateFormat")
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            String dateStr = dateFormat.format(item_note.getDate().getTime());
-            date.setText(dateStr);
-
-            container.addView(itemView);
-        }
     }
 }
