@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity implements ToolbarHolder{
+public class MainActivity extends AppCompatActivity implements ToolbarHolder, OnExitDialogListener{
     private DrawerLayout drawerLayout;
 
     @Override
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements ToolbarHolder{
                         drawerLayout.close();
                         return true;
                     case R.id.menu_drawer_exit:
-                        Toast.makeText(getApplicationContext(), "Выход", Toast.LENGTH_LONG).show();
+                        showExitDialogFragment();
                         drawerLayout.close();
                         return true;
                 }
@@ -72,5 +72,21 @@ public class MainActivity extends AppCompatActivity implements ToolbarHolder{
                 R.string.drawer_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
+    }
+
+    public void showExitDialogFragment(){
+        ExitDialogFragment exitDialogFragment = new ExitDialogFragment();
+//        exitDialogFragment.setOnClickListener(new OnExitDialogListener() {
+//            @Override
+//            public void onExitDialogOk() {
+//
+//            }
+//        });
+        exitDialogFragment.show(getSupportFragmentManager(), ExitDialogFragment.TAG);
+    }
+
+    @Override
+    public void onExitDialogOk() {
+        Toast.makeText(getApplicationContext(), "Выход", Toast.LENGTH_LONG).show();
     }
 }
