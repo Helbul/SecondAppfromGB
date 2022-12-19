@@ -12,4 +12,10 @@
     <string name="drawer_open">Открыть</string>
     <string name="drawer_close">Закрыть</string>
     <string name="user">Пользовтель</string>
+    <string name="name_note">Название заметки</string>
+    <string name="description_note">Описание заметки</string>
+    <string name="text_note">Текст заметки</string>
+    <string name="save_note">Сохранить</string>
+    <string name="action_edit">Редактировать</string>
+    <string name="action_delete">Удалить</string>
 </resources>
