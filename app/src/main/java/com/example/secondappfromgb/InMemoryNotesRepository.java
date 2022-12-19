@@ -1,15 +1,26 @@
 package com.example.secondappfromgb;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
+
+import androidx.appcompat.app.WindowDecorActionBar;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class InMemoryNotesRepository implements NotesRepository{
     private static NotesRepository INSTANCE;
     private Context context;
     private ArrayList<Note> result = new ArrayList<>();
+
+    private Executor executor = Executors.newSingleThreadExecutor();
+
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     public InMemoryNotesRepository(Context context) {
         this.context = context;
@@ -27,23 +38,94 @@ public class InMemoryNotesRepository implements NotesRepository{
     }
 
     @Override
-    public List<Note> getAll() {
-        return result;
+    public void getAll(Callback<List<Note>> callback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(result);
+                    }
+                });
+            }
+        });
     }
 
     @Override
-    public void add(Note note) {
-        result.add(note);
+    public void add(Note note, Callback<Note> callback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                result.add(note);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(note);
+                    }
+                });
+            }
+        });
     }
 
     @Override
-    public void remove(Note note) {
-        result.remove(note);
+    public void remove(Note note, Callback<Note> callback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                result.remove(note);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(null);
+                    }
+                });
+            }
+        });
     }
 
     @Override
-    public void remove(int index) {
-        result.remove(index);
+    public void remove(int index, Callback<Note> callback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                result.remove(index);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(null);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void update(Note note, Note updateNote, Callback<Note> callback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                int index;
+                if (result.contains(note)) {
+                    index = result.indexOf(note);
+                } else {
+                    return;
+                }
+
+                result.set(index, updateNote);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(updateNote);
+                    }
+                });
+            }
+        });
     }
 
 
