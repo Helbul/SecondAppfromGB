@@ -1,12 +1,18 @@
 package com.example.secondappfromgb;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.appcompat.app.WindowDecorActionBar;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -14,6 +20,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class InMemoryNotesRepository implements NotesRepository{
+
+    private SharedPreferences sharedPreferences;
+    public static final String SHARED_KEY = "SHARED_KEY";
+
     private static NotesRepository INSTANCE;
     private Context context;
     private ArrayList<Note> result = new ArrayList<>();
@@ -24,10 +34,20 @@ public class InMemoryNotesRepository implements NotesRepository{
 
     public InMemoryNotesRepository(Context context) {
         this.context = context;
-        result.add(new Note("Note 1", "Description 1", new GregorianCalendar(2020, 0, 1),"111111111111111111111111111111"));
-        result.add(new Note("Note 2", "Description 2", new GregorianCalendar(2021, 1, 12),"22222222222222222"));
-        result.add(new Note("Note 3", "Description 3", new GregorianCalendar(2022, 3, 20),"33333333333333333333333333333333333333333"));
-        result.add(new Note("Note 4", "Description 4", new GregorianCalendar(1999, 11, 31),"444444444"));
+        sharedPreferences = context.getSharedPreferences(SHARED_KEY, Context.MODE_PRIVATE);
+        result = new ArrayList<>();
+        String savedNotes = sharedPreferences.getString(SHARED_KEY, null);
+        if (savedNotes == null || savedNotes.isEmpty()) {
+            Toast.makeText(context, "Empty", Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                Type type = new TypeToken<ArrayList<Note>>() {
+                }.getType();
+                 result = new GsonBuilder().create().fromJson(savedNotes, type);
+            } catch (JsonSyntaxException e) {
+                Toast.makeText(context, "Ошибка трансформации", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public static NotesRepository getInstance(Context context) {
@@ -63,6 +83,9 @@ public class InMemoryNotesRepository implements NotesRepository{
             @Override
             public void run() {
                 result.add(note);
+                String jsonNotes = new GsonBuilder().create().toJson(result);
+                sharedPreferences.edit().putString(SHARED_KEY, jsonNotes).apply();
+
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -79,6 +102,8 @@ public class InMemoryNotesRepository implements NotesRepository{
             @Override
             public void run() {
                 result.remove(note);
+                String jsonNotes = new GsonBuilder().create().toJson(result);
+                sharedPreferences.edit().putString(SHARED_KEY, jsonNotes).apply();
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -95,6 +120,8 @@ public class InMemoryNotesRepository implements NotesRepository{
             @Override
             public void run() {
                 result.remove(index);
+                String jsonNotes = new GsonBuilder().create().toJson(result);
+                sharedPreferences.edit().putString(SHARED_KEY, jsonNotes).apply();
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -118,6 +145,8 @@ public class InMemoryNotesRepository implements NotesRepository{
                 }
 
                 result.set(index, updateNote);
+                String jsonNotes = new GsonBuilder().create().toJson(result);
+                sharedPreferences.edit().putString(SHARED_KEY, jsonNotes).apply();
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
